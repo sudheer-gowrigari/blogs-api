@@ -21,12 +21,7 @@ const origin = {
 
 app.use(cors(origin))
 
-const postLimiter = rateLimit({
-    windowMs: 1 * 60 * 1000,
-    max: 1,
-  })
-  
-  app.post('/blogs/api', postLimiter, addBlog)
+
 
 const getBlogs = (request, response) => {
     console.log(" in get blogs");
@@ -53,6 +48,13 @@ const addBlog = (request, response) => {
   )
 }
 
+const postLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000,
+    max: 1,
+  })
+  
+  app.post('/blogs/api', postLimiter, addBlog)
+  
 app
   .route('/blogs/api')
   // GET endpoint
