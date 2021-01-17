@@ -10,6 +10,7 @@ app.use(bodyParser.urlencoded({extended: true}))
 app.use(cors())
 
 const getBlogs = (request, response) => {
+    console.log(" in get blogs");
   pool.query('SELECT * FROM blogs', (error, results) => {
     if (error) {
       throw error
