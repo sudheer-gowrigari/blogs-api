@@ -50,7 +50,7 @@ const addBlog = (request, response) => {
 
 const postLimiter = rateLimit({
     windowMs: 1 * 60 * 1000,
-    max: 1,
+    max: 100,
   })
   
   app.post('/blogs/api', postLimiter, addBlog)
