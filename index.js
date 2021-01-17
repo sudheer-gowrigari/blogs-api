@@ -49,7 +49,6 @@ const addBlog = (request, response) => {
 const updateBlog = (request, response) => {
   const blogId = request.params.id;
   const { title, text } = request.body;
-  console.log(title, text, blogId);
   const query = `UPDATE blogs SET title='${title}', text='${text}' WHERE id='${blogId}' RETURNING id, title, text, timestamp`;
   pool.query(query, (error, results) => {
     if (error) {
@@ -61,10 +60,9 @@ const updateBlog = (request, response) => {
 
 const getSingleBlog = (request, response) => {
   const blogId = request.params.id;
-  console.log("blog id", blogId);
   const query = `SELECT * FROM blogs where id=${blogId}`;
   pool.query(query, (error, results) => {
-    let resultCount = results.rowCount;
+    // let resultCount = results.rowCount;
     if (error) {
       throw error;
     }
@@ -73,7 +71,6 @@ const getSingleBlog = (request, response) => {
 };
 
 const deletBlogs = (request, response) => {
-  console.log("in delete blogs");
   pool.query("DELETE FROM blogs", (error, results) => {
     if (error) {
       throw error;
@@ -85,7 +82,6 @@ const deletBlogs = (request, response) => {
 };
 
 const deletSingleBlog = (request, response) => {
-  console.log("in delete single blog");
   const blogId = request.params.id;
   const query = `DELETE FROM blogs where id=${blogId} RETURNING id`;
   pool.query(query, (error, results) => {
@@ -191,16 +187,19 @@ app
   // POST endpoint
   .post(addBlog)
   .delete(deletBlogs);
+//generate sample data
+app
+  .route("/blogs/api/generateSampleData")
+  // GET endpoint
+  .get(generateSampleData);
+
+//CRUD on Single record
 app
   .route("/blogs/api/:id")
   .get(getSingleBlog)
   .post(updateBlog)
   .delete(deletSingleBlog);
 
-app
-  .route("/blogs/api/generateSampleData")
-  // GET endpoint
-  .get(generateSampleData);
 // Start server
 app.listen(process.env.PORT || 3002, () => {
   console.log(`Server listening`);
