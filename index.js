@@ -2,12 +2,31 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const {pool} = require('./config')
+const helmet = require('helmet')
+const compression = require('compression')
+const rateLimit = require('express-rate-limit')
+const {body, check} = require('express-validator')
 
 const app = express()
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(cors())
+app.use(compression())
+app.use(helmet())
+const isProduction = process.env.NODE_ENV === 'production'
+const origin = {
+  origin: isProduction ? 'https://salesforce-blogs.herokuapp.com/' : '*',
+}
+
+app.use(cors(origin))
+
+const postLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000,
+    max: 1,
+  })
+  
+  app.post('/blogs/api', postLimiter, addBlog)
 
 const getBlogs = (request, response) => {
     console.log(" in get blogs");
