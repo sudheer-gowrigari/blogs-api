@@ -34,7 +34,7 @@ const getBlogs = (request, response) => {
 }
 
 const addBlog = (request, response) => {
-  const {author, title} = request.body
+  const {title, text} = request.body
 
   pool.query(
     'INSERT INTO blogs (title, text) VALUES ($1, $2)',
