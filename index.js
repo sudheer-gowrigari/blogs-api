@@ -22,16 +22,16 @@ const origin = {
 
 app.use(cors(origin));
 
-const getBlogs = (request, response) => {
+const getBlogs = (request, response, next) => {
   pool.query("SELECT * FROM blogs", (error, results) => {
     if (error) {
-      throw error;
+        return next(error);
     }
     response.status(200).json(results.rows);
   });
 };
 
-const addBlog = (request, response) => {
+const addBlog = (request, response, next) => {
   const { title, text } = request.body;
 
   pool.query(
@@ -39,41 +39,44 @@ const addBlog = (request, response) => {
     [title, text],
     (error, results) => {
       if (error) {
-        throw error;
+        return next(error);
       }
       response.status(200).json(results.rows[0]);
     }
   );
 };
 
-const updateBlog = (request, response) => {
+const updateBlog = (request, response, next) => {
   const blogId = request.params.id;
   const { title, text } = request.body;
   const query = `UPDATE blogs SET title='${title}', text='${text}' WHERE id='${blogId}' RETURNING id, title, text, timestamp`;
   pool.query(query, (error, results) => {
     if (error) {
-      throw error;
+        return next(error);
     }
     response.status(200).json(results.rows[0]);
   });
 };
 
-const getSingleBlog = (request, response) => {
+const getSingleBlog = (request, response, next) => {
   const blogId = request.params.id;
   const query = `SELECT * FROM blogs where id=${blogId}`;
   pool.query(query, (error, results) => {
-    // let resultCount = results.rowCount;
+    let resultCount = results.rowCount;
     if (error) {
-      throw error;
+        return next(error);
+    }
+    if(resultCount == 0){
+       return next(new Error("Blog id not found"));
     }
     response.status(200).json(results.rows[0]);
   });
 };
 
-const deletBlogs = (request, response) => {
+const deletBlogs = (request, response, next) => {
   pool.query("DELETE FROM blogs", (error, results) => {
     if (error) {
-      throw error;
+        return next(error);
     }
     response
       .status(200)
@@ -81,12 +84,12 @@ const deletBlogs = (request, response) => {
   });
 };
 
-const deletSingleBlog = (request, response) => {
+const deletSingleBlog = (request, response, next) => {
   const blogId = request.params.id;
   const query = `DELETE FROM blogs where id=${blogId} RETURNING id`;
   pool.query(query, (error, results) => {
     if (error) {
-      throw error;
+        return next(error);
     }
     response
       .status(200)
@@ -94,7 +97,7 @@ const deletSingleBlog = (request, response) => {
   });
 };
 
-const generateSampleData = (request, response) => {
+const generateSampleData = (request, response, next) => {
   const sampaleData = [
     {
       title: "How the Employee Experience (EX) Drives Lamborghini’s Success",
@@ -163,7 +166,7 @@ const generateSampleData = (request, response) => {
       [title, text],
       (error, results) => {
         if (error) {
-          throw error;
+            return next(error);
         }
       }
     );
