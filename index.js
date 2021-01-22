@@ -20,7 +20,7 @@ const origin = {
   origin: isProduction ? "https://salesforce-blogs.herokuapp.com/" : "*",
 };
 
-app.use(cors(origin));
+//app.use(cors(origin));
 
 const getBlogs = (request, response, next) => {
   pool.query("SELECT * FROM blogs", (error, results) => {
